@@ -51,8 +51,8 @@ session.sched_interval: 0 # work braodcast interval, 0 means braodcast when new 
 session.diff: 1050000 # diff for miner
 
 # node
-node.url: http://127.0.0.1:9888 # eiyaro-classic node url
-node.name: btmc_mainnet # eiyaro-classic node name, set with default
+node.url: http://127.0.0.1:9888 # eiyaro node url
+node.name: eiyaro_mainnet # eiyaronode name, set with default
 node.sync_interval: 100ms # interval of getting work from node
 
 service.port: 11002 # gin server port
