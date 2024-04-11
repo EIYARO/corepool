@@ -12,8 +12,8 @@ $ git clone https://github.com/EIYARO-Project/corepool.git $GOPATH/src/github.co
 ### 2) Build source code
 
 ```
-$ cd $GOPATH/src/github.com/eiyaro/corepool/stratum/ey/cmd
-$ go build -o stratum_btmc
+$ cd $GOPATH/src/github.com/eiyaro/corepool/stratum/eiyaro/cmd
+$ go build -o stratum_eiyaro
 ```
 
 ## 2 Run
@@ -21,7 +21,7 @@ $ go build -o stratum_btmc
 ### 1) Configurate parameters
 
 ```
-$ cd $GOPATH/src/github.com/eiyaro/corepool/stratum/ey/conf
+$ cd $GOPATH/src/github.com/eiyaro/corepool/stratum/eiyaro/conf
 $ vim prod.yml
 ```
 
@@ -30,8 +30,8 @@ set `node.url` with the eiyaro-class node url, then leave other parameters with 
 ### 2) Run corepool
 
 ```
-$ cd $GOPATH/src/github.com/eiyaro/corepool/stratum/ey/cmd
-$ ./stratum_btmc -config=../conf/prod.yml
+$ cd $GOPATH/src/github.com/eiyaro/corepool/stratum/eiyaro/cmd
+$ ./stratum_eiyaro -config=../conf/prod.yml
 ```
 
 ## 3 Parameter interpretation
