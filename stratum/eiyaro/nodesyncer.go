@@ -12,22 +12,22 @@ import (
 	"corepool/stratum/eiyaro/rpc"
 )
 
-type eycNodeSyncer struct {
-	client *rpc.BtmcClient
+type eyNodeSyncer struct {
+	client *rpc.EyClient
 	bt     *api.GetWorkResp
 	btLock sync.RWMutex
 
 	latestHeight uint64
 }
 
-func NewBtmcNodeSyncer(service string, nodeURL string) (*eycNodeSyncer, error) {
-	return &eycNodeSyncer{
-		client:       rpc.NewBtmcClient(service, nodeURL),
+func NewEyNodeSyncer(service string, nodeURL string) (*eyNodeSyncer, error) {
+	return &eyNodeSyncer{
+		client:       rpc.NewEyClient(service, nodeURL),
 		latestHeight: 0,
 	}, nil
 }
 
-func (n *eycNodeSyncer) fetchBlockTemplate() (ss.BlockTemplate, error) {
+func (n *eyNodeSyncer) fetchBlockTemplate() (ss.BlockTemplate, error) {
 	reply, err := n.client.GetWork()
 	if err != nil {
 		return nil, err
@@ -51,13 +51,13 @@ func (n *eycNodeSyncer) fetchBlockTemplate() (ss.BlockTemplate, error) {
 	}, nil
 }
 
-func (n *eycNodeSyncer) Pull() (ss.BlockTemplate, error) {
+func (n *eyNodeSyncer) Pull() (ss.BlockTemplate, error) {
 	return n.fetchBlockTemplate()
 }
 
-func (n *eycNodeSyncer) Submit(share ss.Share) error {
-	eycShare := share.(*eycShare)
-	rawdata, err := n.client.SubmitBlock(&api.SubmitWorkReq{BlockHeader: eycShare.header})
+func (n *eyNodeSyncer) Submit(share ss.Share) error {
+	eyShare := share.(*eyShare)
+	rawdata, err := n.client.SubmitBlock(&api.SubmitWorkReq{BlockHeader: eyShare.header})
 	if err != nil {
 		return err
 	}
@@ -71,14 +71,14 @@ func (n *eycNodeSyncer) Submit(share ss.Share) error {
 		return err
 	}
 	if !result {
-		logger.Error("block rejected", "nonce", eycShare.nonce, "hash", eycShare.blockHash)
+		logger.Error("block rejected", "nonce", eyShare.nonce, "hash", eyShare.blockHash)
 		return nil
 	}
-	logger.Info("send nonce success", "nonce", eycShare.nonce)
+	logger.Info("send nonce success", "nonce", eyShare.nonce)
 	return nil
 }
 
-func (n *eycNodeSyncer) GetBt() (*api.GetWorkResp, error) {
+func (n *eyNodeSyncer) GetBt() (*api.GetWorkResp, error) {
 	n.btLock.RLock()
 	defer n.btLock.RUnlock()
 	if n.bt == nil {

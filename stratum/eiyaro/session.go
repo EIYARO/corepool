@@ -10,36 +10,36 @@ import (
 
 const serverIdOffset = uint(60)
 
-type eycSessionData struct {
+type eySessionData struct {
 	nonce    uint64
 	worker   *ss.Worker
 	submitId *hashmap.HashMap
 }
 
-func (s *eycSessionData) GetWorker() *ss.Worker {
+func (s *eySessionData) GetWorker() *ss.Worker {
 	return s.worker
 }
 
-func (s *eycSessionData) SetWorker(worker *ss.Worker) {
+func (s *eySessionData) SetWorker(worker *ss.Worker) {
 	s.worker = worker
 }
 
-func (s *eycSessionData) getNonce() uint64 {
+func (s *eySessionData) getNonce() uint64 {
 	return s.nonce
 }
 
-type eycSessionDataBuilder struct {
+type eySessionDataBuilder struct {
 	id              uint64
 	maxSessions     int
 	sessionIdOffset uint
 }
 
-func NewBtmcSessionDataBuilder(serverId uint64, maxSessions int) *eycSessionDataBuilder {
+func NewEySessionDataBuilder(serverId uint64, maxSessions int) *eySessionDataBuilder {
 	sessionIdOffset := serverIdOffset - uint(math.Ceil(math.Log2(float64(maxSessions))))
 	if sessionIdOffset == serverIdOffset {
 		sessionIdOffset--
 	}
-	return &eycSessionDataBuilder{
+	return &eySessionDataBuilder{
 		id:              serverId,
 		maxSessions:     maxSessions,
 		sessionIdOffset: sessionIdOffset,
@@ -47,8 +47,8 @@ func NewBtmcSessionDataBuilder(serverId uint64, maxSessions int) *eycSessionData
 }
 
 // Build builds a eySession
-func (b *eycSessionDataBuilder) Build(sessionId uint) ss.SessionData {
-	return &eycSessionData{
+func (b *eySessionDataBuilder) Build(sessionId uint) ss.SessionData {
+	return &eySessionData{
 		nonce:    (b.id << serverIdOffset) | (uint64(sessionId) << b.sessionIdOffset),
 		worker:   nil,
 		submitId: &hashmap.HashMap{},

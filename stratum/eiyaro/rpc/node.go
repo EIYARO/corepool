@@ -12,19 +12,19 @@ import (
 	ss "corepool/stratum"
 )
 
-type BtmcClient struct {
+type EyClient struct {
 	service string
-	eycCli *eyrpc.Client
+	eyCli *eyrpc.Client
 }
 
-func NewBtmcClient(service string, nodeURL string) *BtmcClient {
-	return &BtmcClient{
+func NewEyClient(service string, nodeURL string) *EyClient {
+	return &EyClient{
 		service: service,
-		eycCli: &eyrpc.Client{BaseURL: nodeURL},
+		eyCli: &eyrpc.Client{BaseURL: nodeURL},
 	}
 }
 
-func (c *BtmcClient) GetWork() (*api.GetWorkResp, error) {
+func (c *EyClient) GetWork() (*api.GetWorkResp, error) {
 	var result ss.NodeJsonRpcResp
 	if err := ss.CallWithMethod(c.service, "get-work", []string{}, &result); err != nil {
 		return nil, err
@@ -40,9 +40,9 @@ func (c *BtmcClient) GetWork() (*api.GetWorkResp, error) {
 	return &reply, nil
 }
 
-func (c *BtmcClient) SubmitBlock(req interface{}) (interface{}, error) {
+func (c *EyClient) SubmitBlock(req interface{}) (interface{}, error) {
 	var response = &api.Response{}
-	c.eycCli.Call(context.Background(), "/submit-work", req, response)
+	c.eyCli.Call(context.Background(), "/submit-work", req, response)
 
 	switch response.Status {
 	case api.FAIL:
@@ -59,7 +59,7 @@ type Peer struct {
 	Ping       string `json:"ping"`
 }
 
-func (c *BtmcClient) GetPeers() ([]*Peer, error) {
+func (c *EyClient) GetPeers() ([]*Peer, error) {
 	var result ss.NodeJsonRpcResp
 	if err := ss.CallWithMethod(c.service, "list-peers", []string{}, &result); err != nil {
 		return nil, err
@@ -77,7 +77,7 @@ type balance struct {
 	Amount int64 `json:"amount"`
 }
 
-func (c *BtmcClient) GetBalance() (int64, error) {
+func (c *EyClient) GetBalance() (int64, error) {
 	var result ss.NodeJsonRpcResp
 	if err := ss.CallWithMethod(c.service, "list-balances", []string{}, &result); err != nil {
 		return 0, err

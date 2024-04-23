@@ -17,8 +17,8 @@ const (
 	defaultFee    = uint64(300)
 )
 
-type eycShare struct {
-	job    *eycJob
+type eyShare struct {
+	job    *eyJob
 	worker *ss.Worker
 
 	nonce     uint64
@@ -32,32 +32,32 @@ type eycShare struct {
 }
 
 // build block from the share for node submission
-func (s *eycShare) BuildBlock() (ss.BlockTemplate, error) {
+func (s *eyShare) BuildBlock() (ss.BlockTemplate, error) {
 	// not implemented
 	logger.Fatal("BuildBlock not implemented")
 	return nil, nil
 }
 
 // build pb sharelog from the share for logging
-func (s *eycShare) BuildLog(port uint64) ([]byte, error) {
+func (s *eyShare) BuildLog(port uint64) ([]byte, error) {
 	return nil, errors.New("not support")
 }
 
 // update share state
-func (s *eycShare) UpdateState(state ss.ShareState, reason ss.RejectReason) error {
+func (s *eyShare) UpdateState(state ss.ShareState, reason ss.RejectReason) error {
 	s.state = state
 	s.reason = reason
 	return nil
 }
 
-func (s *eycShare) GetState() ss.ShareState {
+func (s *eyShare) GetState() ss.ShareState {
 	return s.state
 }
 
-func (s *eycShare) GetReason() ss.RejectReason {
+func (s *eyShare) GetReason() ss.RejectReason {
 	return s.reason
 }
 
-func (s *eycShare) GetWorker() *ss.Worker {
+func (s *eyShare) GetWorker() *ss.Worker {
 	return s.worker
 }

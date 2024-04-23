@@ -11,7 +11,7 @@ import (
 	"corepool/stratum/eiyaro/util"
 )
 
-type eycJob struct {
+type eyJob struct {
 	id                     ss.JobId
 	version                uint64
 	height                 uint64
@@ -25,19 +25,19 @@ type eycJob struct {
 	diff                   *big.Int
 }
 
-func (j *eycJob) GetId() ss.JobId {
+func (j *eyJob) GetId() ss.JobId {
 	return j.id
 }
 
-func (j *eycJob) GetDiff() uint64 {
+func (j *eyJob) GetDiff() uint64 {
 	return j.diff.Uint64()
 }
 
-func (j *eycJob) GetTarget() (string, bool, bool) {
+func (j *eyJob) GetTarget() (string, bool, bool) {
 	return "", false, false
 }
 
-func (j *eycJob) Encode() (interface{}, error) {
+func (j *eyJob) Encode() (interface{}, error) {
 	return ss.StratumJSONRpcNotify{
 		Version: "2.0",
 		Method:  "job",
@@ -45,7 +45,7 @@ func (j *eycJob) Encode() (interface{}, error) {
 	}, nil
 }
 
-func (j *eycJob) encodeLogin(login string) *jobReply {
+func (j *eyJob) encodeLogin(login string) *jobReply {
 	return &jobReply{
 		Id:     login,
 		Job:    j.genReplyData(),
@@ -53,7 +53,7 @@ func (j *eycJob) encodeLogin(login string) *jobReply {
 	}
 }
 
-func (j *eycJob) genReplyData() *jobReplyData {
+func (j *eyJob) genReplyData() *jobReplyData {
 	return &jobReplyData{
 		JobId:                  j.GetId().String(),
 		Version:                utils.ToLittleEndianHex(j.version),

@@ -41,25 +41,25 @@ func main() {
 	}
 
 	// configuration node & verifier
-	node := vars.GetString("node.name", "eyc_testnet")
+	node := vars.GetString("node.name", "ey_testnet")
 	nodeUrl := vars.GetString("node.url", "http://127.0.0.1:9888")
 	hostprovider.InitStaticProvider(map[string][]string{node: {nodeUrl}})
 	http.Init(time.Second)
 
-	syncer, err := ey.NewBtmcNodeSyncer(node, nodeUrl)
+	syncer, err := ey.NewEyNodeSyncer(node, nodeUrl)
 	if err != nil {
 		logger.Error("can't create node syncer", "error", err)
 		return
 	}
 
-	verifier, err := ey.NewBtmcVerifier(state)
+	verifier, err := ey.NewEyVerifier(state)
 	if err != nil {
 		logger.Error("can't create verifier", "error", err)
 		return
 	}
 
 	// create eySessionData obj
-	dataBuilder := ey.NewBtmcSessionDataBuilder(uint64(state.GetId()), maxConn)
+	dataBuilder := ey.NewEySessionDataBuilder(uint64(state.GetId()), maxConn)
 
 	// create diffAdjust
 	diffAdjust := ss.NewDiffAdjust(big.NewInt(vars.GetInt64("session.diff", 500000)))
