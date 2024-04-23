@@ -13,11 +13,11 @@ const (
 	MSubmit string = "submit"
 )
 
-type btmDecoder struct{}
+type eyDecoder struct{}
 
-func NewBtmDecoder() ss.Decoder { return &btmDecoder{} }
+func NewBtmDecoder() ss.Decoder { return &eyDecoder{} }
 
-func (d *btmDecoder) Decode(data []byte, session *ss.TcpSession) (ss.Request, error) {
+func (d *eyDecoder) Decode(data []byte, session *ss.TcpSession) (ss.Request, error) {
 	var req ss.JSONRpcReq
 	if err := json.Unmarshal(data, &req); err != nil {
 		return nil, err
@@ -33,7 +33,7 @@ func (d *btmDecoder) Decode(data []byte, session *ss.TcpSession) (ss.Request, er
 	}
 }
 
-func (d *btmDecoder) decodeSubmit(data []byte, session *ss.TcpSession, id *json.RawMessage) (ss.Request, error) {
+func (d *eyDecoder) decodeSubmit(data []byte, session *ss.TcpSession, id *json.RawMessage) (ss.Request, error) {
 	var request submitRequest
 	if err := json.Unmarshal(data, &request); err != nil {
 		session.Error(request.Id, ss.ErrorUnknown)
@@ -42,7 +42,7 @@ func (d *btmDecoder) decodeSubmit(data []byte, session *ss.TcpSession, id *json.
 	return NewSubmitRequest(request), nil
 }
 
-func (d *btmDecoder) decodeLogin(data []byte, session *ss.TcpSession, id *json.RawMessage) (ss.Request, error) {
+func (d *eyDecoder) decodeLogin(data []byte, session *ss.TcpSession, id *json.RawMessage) (ss.Request, error) {
 	var request loginRequest
 	if err := json.Unmarshal(data, &request); err != nil {
 		session.Error(id, ss.ErrorUnknown)

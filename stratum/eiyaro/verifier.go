@@ -10,48 +10,48 @@ import (
 	ss "corepool/stratum"
 )
 
-type btmcVerifier struct {
+type eycVerifier struct {
 	serverState *ss.ServerState
 }
 
-func NewBtmcVerifier(state *ss.ServerState) (*btmcVerifier, error) {
-	return &btmcVerifier{
+func NewBtmcVerifier(state *ss.ServerState) (*eycVerifier, error) {
+	return &eycVerifier{
 		serverState: state,
 	}, nil
 }
 
-func (v *btmcVerifier) Verify(share ss.Share) error {
-	btmcShare := share.(*btmcShare)
-	btmcJob := btmcShare.job
-	btmcShare.header = &types.BlockHeader{
-		Version:           btmcJob.version,
-		Height:            btmcJob.height,
-		PreviousBlockHash: *btmcJob.previousBlockHash,
-		Timestamp:         uint64(btmcJob.timestamp.Unix()),
+func (v *eycVerifier) Verify(share ss.Share) error {
+	eycShare := share.(*eycShare)
+	eycJob := eycShare.job
+	eycShare.header = &types.BlockHeader{
+		Version:           eycJob.version,
+		Height:            eycJob.height,
+		PreviousBlockHash: *eycJob.previousBlockHash,
+		Timestamp:         uint64(eycJob.timestamp.Unix()),
 		BlockCommitment: types.BlockCommitment{
-			TransactionsMerkleRoot: *btmcJob.transactionsMerkleRoot,
-			TransactionStatusHash:  *btmcJob.transactionStatusHash,
+			TransactionsMerkleRoot: *eycJob.transactionsMerkleRoot,
+			TransactionStatusHash:  *eycJob.transactionStatusHash,
 		},
-		Nonce: btmcShare.nonce,
-		Bits:  btmcJob.bits,
+		Nonce: eycShare.nonce,
+		Bits:  eycJob.bits,
 	}
-	shareHeader := btmcShare.header
+	shareHeader := eycShare.header
 	headerHash := shareHeader.Hash()
-	cmpHash := algorithm.LegacyAlgorithm(&headerHash, btmcJob.seed)
+	cmpHash := algorithm.LegacyAlgorithm(&headerHash, eycJob.seed)
 	if cmpHash == nil {
 		share.UpdateState(ss.ShareStateRejected, ss.RejectReasonUndefined)
 		return nil
 	}
 
-	btmcShare.blockHash = &headerHash
+	eycShare.blockHash = &headerHash
 	bMax := big.NewInt(0).Exp(big.NewInt(2), big.NewInt(256), nil)
-	bits := difficulty.BigToCompact(big.NewInt(0).Div(bMax, btmcShare.netDiff))
+	bits := difficulty.BigToCompact(big.NewInt(0).Div(bMax, eycShare.netDiff))
 	if difficulty.HashToBig(cmpHash).Cmp(difficulty.CompactToBig(bits)) <= 0 {
 		share.UpdateState(ss.ShareStateBlock, ss.RejectReasonPass)
 		return nil
 	}
 
-	shareBits := difficulty.BigToCompact(big.NewInt(0).Div(bMax, btmcJob.diff))
+	shareBits := difficulty.BigToCompact(big.NewInt(0).Div(bMax, eycJob.diff))
 	if difficulty.HashToBig(cmpHash).Cmp(difficulty.CompactToBig(shareBits)) > 0 {
 		share.UpdateState(ss.ShareStateRejected, ss.RejectReasonLowDiff)
 		return nil

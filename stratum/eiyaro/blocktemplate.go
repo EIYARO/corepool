@@ -22,8 +22,8 @@ type eiyaroBlockTemplate struct {
 }
 
 func (b *eiyaroBlockTemplate) CreateJob(session *ss.TcpSession) (ss.Job, error) {
-	data := session.GetSessionData().(*btmcSessionData)
-	job := &btmcJob{
+	data := session.GetSessionData().(*eycSessionData)
+	job := &eycJob{
 		id:                     ss.AllocJobId(),
 		version:                b.version,
 		height:                 b.height,
@@ -51,16 +51,16 @@ func (b *eiyaroBlockTemplate) CreateJob(session *ss.TcpSession) (ss.Job, error) 
 // -1 : older than the other, update
 func (b *eiyaroBlockTemplate) Compare(template ss.BlockTemplate) int {
 	// TODO: compare when height info is available
-	btmcBT := template.(*eiyaroBlockTemplate)
-	if b != nil && b.previousBlockHash.String() == btmcBT.previousBlockHash.String() {
+	eycBT := template.(*eiyaroBlockTemplate)
+	if b != nil && b.previousBlockHash.String() == eycBT.previousBlockHash.String() {
 		return 0
 	}
-	if btmcBT.height <= b.height {
+	if eycBT.height <= b.height {
 		logger.Warn("bt diff height",
 			"old_height", b.height,
-			"new_height", btmcBT.height,
+			"new_height", eycBT.height,
 			"old_prevhash", b.previousBlockHash,
-			"new_prevhash", btmcBT.previousBlockHash,
+			"new_prevhash", eycBT.previousBlockHash,
 		)
 	}
 	// update block template when previous block hash not the same, no matter newer or older

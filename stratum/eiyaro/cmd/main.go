@@ -20,7 +20,7 @@ func main() {
 	vars.Init()
 
 	stratumId := vars.GetInt("stratum.id", 0)
-	service := service.New("stratum_btm"+"."+strconv.Itoa(stratumId), service.NewConfig(vars.GetString("mode", "")))
+	service := service.New("stratum_ey"+"."+strconv.Itoa(stratumId), service.NewConfig(vars.GetString("mode", "")))
 
 	maxConn := vars.GetInt("stratum.max_conn", 32768)
 	// init connection controller
@@ -41,7 +41,7 @@ func main() {
 	}
 
 	// configuration node & verifier
-	node := vars.GetString("node.name", "btmc_testnet")
+	node := vars.GetString("node.name", "eyc_testnet")
 	nodeUrl := vars.GetString("node.url", "http://127.0.0.1:9888")
 	hostprovider.InitStaticProvider(map[string][]string{node: {nodeUrl}})
 	http.Init(time.Second)
@@ -58,7 +58,7 @@ func main() {
 		return
 	}
 
-	// create btmSessionData obj
+	// create eySessionData obj
 	dataBuilder := ey.NewBtmcSessionDataBuilder(uint64(state.GetId()), maxConn)
 
 	// create diffAdjust

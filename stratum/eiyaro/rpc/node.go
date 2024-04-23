@@ -14,13 +14,13 @@ import (
 
 type BtmcClient struct {
 	service string
-	btmcCli *eyrpc.Client
+	eycCli *eyrpc.Client
 }
 
 func NewBtmcClient(service string, nodeURL string) *BtmcClient {
 	return &BtmcClient{
 		service: service,
-		btmcCli: &eyrpc.Client{BaseURL: nodeURL},
+		eycCli: &eyrpc.Client{BaseURL: nodeURL},
 	}
 }
 
@@ -42,7 +42,7 @@ func (c *BtmcClient) GetWork() (*api.GetWorkResp, error) {
 
 func (c *BtmcClient) SubmitBlock(req interface{}) (interface{}, error) {
 	var response = &api.Response{}
-	c.btmcCli.Call(context.Background(), "/submit-work", req, response)
+	c.eycCli.Call(context.Background(), "/submit-work", req, response)
 
 	switch response.Status {
 	case api.FAIL:

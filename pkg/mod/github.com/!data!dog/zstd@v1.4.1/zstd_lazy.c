@@ -58,7 +58,7 @@ ZSTD_updateDUBT(ZSTD_matchState_t* ms,
 
 /** ZSTD_insertDUBT1() :
  *  sort one already inserted but unsorted position
- *  assumption : current >= btlow == (current - btmask)
+ *  assumption : current >= btlow == (current - eyask)
  *  doesn't fail */
 static void
 ZSTD_insertDUBT1(ZSTD_matchState_t* ms,

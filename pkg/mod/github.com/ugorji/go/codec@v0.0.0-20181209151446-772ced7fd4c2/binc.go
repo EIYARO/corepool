@@ -1096,7 +1096,7 @@ func bincEncodeTime(t time.Time) []byte {
 	tsecs, tnsecs := t.Unix(), t.Nanosecond()
 	var (
 		bd   byte
-		btmp [8]byte
+		eyp [8]byte
 		bs   [16]byte
 		i    int = 1
 	)
@@ -1106,18 +1106,18 @@ func bincEncodeTime(t time.Time) []byte {
 	}
 	if tsecs != 0 {
 		bd = bd | 0x80
-		bigen.PutUint64(btmp[:], uint64(tsecs))
-		f := pruneSignExt(btmp[:], tsecs >= 0)
+		bigen.PutUint64(eyp[:], uint64(tsecs))
+		f := pruneSignExt(eyp[:], tsecs >= 0)
 		bd = bd | (byte(7-f) << 2)
-		copy(bs[i:], btmp[f:])
+		copy(bs[i:], eyp[f:])
 		i = i + (8 - f)
 	}
 	if tnsecs != 0 {
 		bd = bd | 0x40
-		bigen.PutUint32(btmp[:4], uint32(tnsecs))
-		f := pruneSignExt(btmp[:4], true)
+		bigen.PutUint32(eyp[:4], uint32(tnsecs))
+		f := pruneSignExt(eyp[:4], true)
 		bd = bd | byte(3-f)
-		copy(bs[i:], btmp[f:4])
+		copy(bs[i:], eyp[f:4])
 		i = i + (4 - f)
 	}
 	if l != nil {
@@ -1127,10 +1127,10 @@ func bincEncodeTime(t time.Time) []byte {
 		//zoneName, zoneOffset := t.Zone()
 		zoneOffset /= 60
 		z := uint16(zoneOffset)
-		bigen.PutUint16(btmp[:2], z)
+		bigen.PutUint16(eyp[:2], z)
 		// clear dst flags
-		bs[i] = btmp[0] & 0x3f
-		bs[i+1] = btmp[1]
+		bs[i] = eyp[0] & 0x3f
+		bs[i+1] = eyp[1]
 		i = i + 2
 	}
 	bs[0] = bd
@@ -1149,25 +1149,25 @@ func bincDecodeTime(bs []byte) (tt time.Time, err error) {
 		n     byte
 	)
 	if bd&(1<<7) != 0 {
-		var btmp [8]byte
+		var eyp [8]byte
 		n = ((bd >> 2) & 0x7) + 1
 		i2 = i + n
-		copy(btmp[8-n:], bs[i:i2])
-		//if first bit of bs[i] is set, then fill btmp[0..8-n] with 0xff (ie sign extend it)
+		copy(eyp[8-n:], bs[i:i2])
+		//if first bit of bs[i] is set, then fill eyp[0..8-n] with 0xff (ie sign extend it)
 		if bs[i]&(1<<7) != 0 {
-			copy(btmp[0:8-n], bsAll0xff)
-			//for j,k := byte(0), 8-n; j < k; j++ {	btmp[j] = 0xff }
+			copy(eyp[0:8-n], bsAll0xff)
+			//for j,k := byte(0), 8-n; j < k; j++ {	eyp[j] = 0xff }
 		}
 		i = i2
-		tsec = int64(bigen.Uint64(btmp[:]))
+		tsec = int64(bigen.Uint64(eyp[:]))
 	}
 	if bd&(1<<6) != 0 {
-		var btmp [4]byte
+		var eyp [4]byte
 		n = (bd & 0x3) + 1
 		i2 = i + n
-		copy(btmp[4-n:], bs[i:i2])
+		copy(eyp[4-n:], bs[i:i2])
 		i = i2
-		tnsec = bigen.Uint32(btmp[:])
+		tnsec = bigen.Uint32(eyp[:])
 	}
 	if bd&(1<<5) == 0 {
 		tt = time.Unix(tsec, int64(tnsec)).UTC()

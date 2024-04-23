@@ -100,7 +100,7 @@ func (request *SubmitReq) handleSubmit(session *ss.TcpSession) error {
 		return nil
 	}
 
-	btmcJob := job.(*btmcJob)
+	eycJob := job.(*eycJob)
 
 	// check nonce form
 	noncePattern, _ := regexp.Compile("^[0-9a-f]{1,16}$")
@@ -113,7 +113,7 @@ func (request *SubmitReq) handleSubmit(session *ss.TcpSession) error {
 			"miner", miner,
 			"job_id", request.Params.JobId,
 			"nonce", request.Params.Nonce,
-			"height", btmcJob.height)
+			"height", eycJob.height)
 		return nil
 	}
 
@@ -127,17 +127,17 @@ func (request *SubmitReq) handleSubmit(session *ss.TcpSession) error {
 			"miner", miner,
 			"job_id", request.Params.JobId,
 			"nonce", request.Params.Nonce,
-			"height", btmcJob.height)
+			"height", eycJob.height)
 		return nil
 	}
 
-	netBits := difficulty.CompactToBig(btmcJob.bits)
+	netBits := difficulty.CompactToBig(eycJob.bits)
 	netDiff := big.NewInt(0).Div(util.GetDividend(), netBits)
-	shareDiff := btmcJob.diff.Uint64()
+	shareDiff := eycJob.diff.Uint64()
 
 	// check stale share
-	btmcBlockTemplate := session.GetServerState().GetBlockTemplate().(*eiyaroBlockTemplate)
-	if btmcJob.height != btmcBlockTemplate.height {
+	eycBlockTemplate := session.GetServerState().GetBlockTemplate().(*eiyaroBlockTemplate)
+	if eycJob.height != eycBlockTemplate.height {
 		session.SessionCtl.MinerErrCnt++
 		session.Error(request.Id, ss.ErrorFormatSubmit)
 		// session.SendJob()
@@ -149,15 +149,15 @@ func (request *SubmitReq) handleSubmit(session *ss.TcpSession) error {
 			"nonce", request.Params.Nonce,
 			"share_diff", shareDiff,
 			"net_diff", netDiff,
-			"height", btmcJob.height)
+			"height", eycJob.height)
 		return nil
 	}
 
 	// create share and verify it
-	share := &btmcShare{
+	share := &eycShare{
 		nonce:     nonce,
 		result:    request.Params.Result,
-		job:       btmcJob,
+		job:       eycJob,
 		worker:    worker,
 		netDiff:   netDiff,
 		blockHash: &bc.Hash{},
@@ -172,7 +172,7 @@ func (request *SubmitReq) handleSubmit(session *ss.TcpSession) error {
 			"nonce", request.Params.Nonce,
 			"share_diff", shareDiff,
 			"net_diff", netDiff,
-			"height", btmcJob.height,
+			"height", eycJob.height,
 			"error", err)
 		return nil
 	}
@@ -188,7 +188,7 @@ func (request *SubmitReq) handleSubmit(session *ss.TcpSession) error {
 				"session_ip", session.GetIp(),
 				"miner", miner,
 				"job_id", request.Params.JobId,
-				"height", btmcJob.height,
+				"height", eycJob.height,
 				"error", err)
 		}
 	case ss.ShareStateBlock:
@@ -213,7 +213,7 @@ func (request *SubmitReq) handleSubmit(session *ss.TcpSession) error {
 					"session_ip", session.GetIp(),
 					"miner", miner,
 					"job_id", request.Params.JobId,
-					"height", btmcJob.height,
+					"height", eycJob.height,
 					"error", err)
 			}
 		}()
@@ -225,7 +225,7 @@ func (request *SubmitReq) handleSubmit(session *ss.TcpSession) error {
 				"session_ip", session.GetIp(),
 				"miner", miner,
 				"job_id", request.Params.JobId,
-				"height", btmcJob.height,
+				"height", eycJob.height,
 				"error", err)
 		}
 	case ss.ShareStateRejected:
@@ -239,7 +239,7 @@ func (request *SubmitReq) handleSubmit(session *ss.TcpSession) error {
 			"share_diff", shareDiff,
 			"net_diff", share.netDiff.Uint64(),
 			"hash", share.blockHash.String(),
-			"height", btmcJob.height,
+			"height", eycJob.height,
 			"reason", share.reason.String())
 		if err := session.Error(request.Id, share.GetReason().Error()); err != nil {
 			logger.Error("failed to send reply",
@@ -248,7 +248,7 @@ func (request *SubmitReq) handleSubmit(session *ss.TcpSession) error {
 				"session_ip", session.GetIp(),
 				"miner", miner,
 				"job_id", request.Params.JobId,
-				"height", btmcJob.height,
+				"height", eycJob.height,
 				"error", err)
 		}
 	}
@@ -266,11 +266,11 @@ func spJobReply(method encodeMethod, request interface{}, session *ss.TcpSession
 	switch method {
 	case spHandleLogin:
 		nRequest := request.(*LoginReq)
-		msg := job.(*btmcJob).encodeLogin(nRequest.Params.Login)
+		msg := job.(*eycJob).encodeLogin(nRequest.Params.Login)
 		replyErr = session.Reply(nRequest.Id, msg)
 	case spHandleGetWork:
 		nRequest := request.(*GetWorkReq)
-		msg := job.(*btmcJob).genReplyData()
+		msg := job.(*eycJob).genReplyData()
 		replyErr = session.Reply(nRequest.Id, msg)
 	}
 	if replyErr != nil {
